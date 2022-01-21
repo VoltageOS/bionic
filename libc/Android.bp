@@ -2387,7 +2387,9 @@ cc_library_static {
       }
     },
     sdk_version: "minimum",
-
+    lto: {
+        thin: true,
+    },
     defaults: ["crt_and_memtag_defaults"],
 }
 
@@ -2399,7 +2401,9 @@ cc_library_static {
       }
     },
     sdk_version: "minimum",
-
+    lto: {
+        thin: true,
+    },
     defaults: ["crt_and_memtag_defaults"],
 }
 
