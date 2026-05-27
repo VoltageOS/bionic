@@ -524,9 +524,14 @@ static const char* const kSpoofedEmptyProps[] = {
 
 struct PropOverride { const char* name; const char* value; };
 static const PropOverride kSpoofedValueProps[] = {
-    {"ro.debuggable", "0"}, {"ro.build.type", "user"}, {"ro.secure", "1"},
-    {"ro.adb.secure", "1"}, {"persist.sys.usb.config", "mtp"},
-    {"sys.usb.config", "mtp"}, {nullptr, nullptr}
+    {"ro.debuggable", "0"},
+    {"ro.build.type", "user"},
+    {"ro.build.tags", "release-keys"},
+    {"ro.secure", "1"},
+    {"ro.adb.secure", "1"},
+    {"persist.sys.usb.config", "mtp"},
+    {"sys.usb.config", "mtp"},
+    {nullptr, nullptr}
 };
 
 bool custom_rom_hide_should_spoof_prop(const char* name, char* value) {
