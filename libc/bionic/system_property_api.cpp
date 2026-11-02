@@ -112,11 +112,20 @@ static void read_callback_intercept(void* cookie, const char* name, const char* 
                                is_ro ? 0u : (serial & 0xffffffu));
         return;
     }
-    const char* effective_val = custom_rom_hide_get_prop_override(name);
-    if (!effective_val) effective_val = value;
-    uint32_t len = static_cast<uint32_t>(strlen(effective_val));
-    ctx->original_callback(ctx->original_cookie, name, effective_val,
-                           spoof_serial(is_ro, serial, len));
+    const char* override_val = custom_rom_hide_get_prop_override(name);
+    if (override_val) {
+        uint32_t len = strlen(override_val);
+        uint32_t fake_serial = serial;
+        if (is_ro) {
+            fake_serial = (len < PROP_VALUE_MAX) ? (len << 24) : ((50 << 24) | (1 << 16));
+        } else {
+            fake_serial = (serial & 0xffffff) | (len << 24);
+        }
+        ctx->original_callback(ctx->original_cookie, name, override_val, fake_serial);
+        return;
+    }
+
+    ctx->original_callback(ctx->original_cookie, name, value, serial);
 }
 
 __BIONIC_WEAK_FOR_NATIVE_BRIDGE
@@ -173,9 +182,6 @@ uint32_t __system_property_serial(const prop_info* pi) {
       return spoof_serial(is_ro, real_serial,
                           static_cast<uint32_t>(strlen(override_val)));
   }
-
-  if (is_ro)
-      return spoof_serial(is_ro, real_serial, real_serial >> 24);
 
   return real_serial;
 }
